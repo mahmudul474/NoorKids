@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import {
-  Animated,
-  Easing,
-  Image,
-  StyleSheet,
-  Text,
-  View,
+    Animated,
+    Easing,
+    Image,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -15,14 +15,9 @@ import { spacing } from '@/theme/spacing';
 
 const SPLASH_DURATION = 4000;
 
-export default function SplashScreen() {
-  const logoScale = useRef(
-    new Animated.Value(0.72),
-  ).current;
-
-  const logoOpacity = useRef(
-    new Animated.Value(0),
-  ).current;
+export default function AnimatedSplash() {
+  const logoScale = useRef(new Animated.Value(0.72)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
 
   const subtitleOpacity = useRef(
     new Animated.Value(0),
@@ -41,63 +36,50 @@ export default function SplashScreen() {
   ).current;
 
   useEffect(() => {
-    // ==========================================
-    // LOGO + GLOW + SUBTITLE ANIMATION
-    // ==========================================
+    // --------------------------------
+    // Logo + Glow Animation
+    // --------------------------------
 
     Animated.parallel([
-      // Logo scale
       Animated.timing(logoScale, {
         toValue: 1,
         duration: 850,
-        easing: Easing.out(
-          Easing.back(1.15),
-        ),
+        easing: Easing.out(Easing.back(1.15)),
         useNativeDriver: true,
       }),
 
-      // Logo fade
       Animated.timing(logoOpacity, {
         toValue: 1,
         duration: 650,
-        easing: Easing.out(
-          Easing.ease,
-        ),
+        easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }),
 
-      // Glow scale
       Animated.timing(glowScale, {
         toValue: 1,
         duration: 1000,
-        easing: Easing.out(
-          Easing.ease,
-        ),
+        easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }),
 
-      // Glow fade
       Animated.timing(glowOpacity, {
         toValue: 0.75,
         duration: 700,
         useNativeDriver: true,
       }),
 
-      // Subtitle
       Animated.timing(subtitleOpacity, {
         toValue: 1,
         duration: 650,
         delay: 450,
-        easing: Easing.out(
-          Easing.ease,
-        ),
+        easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }),
     ]).start();
 
-    // ==========================================
-    // 4 SECOND PROGRESS
-    // ==========================================
+    // --------------------------------
+    // 4 Second Progress
+    // --------------------------------
 
     Animated.timing(progress, {
       toValue: 1,
@@ -106,15 +88,14 @@ export default function SplashScreen() {
       useNativeDriver: false,
     }).start();
 
-    // ==========================================
-    // AUTOMATIC NAVIGATION
-    // ==========================================
+    // --------------------------------
+    // Navigate after 4 seconds
+    // --------------------------------
 
     const timer = setTimeout(() => {
       router.replace('/onboarding');
     }, SPLASH_DURATION);
 
-    // Cleanup timer
     return () => {
       clearTimeout(timer);
     };
@@ -133,17 +114,12 @@ export default function SplashScreen() {
       edges={['top', 'bottom']}
     >
       <View style={styles.content}>
-
-        {/* =====================================
-            SOFT PURPLE GLOW
-        ====================================== */}
-
+        {/* Soft Glow */}
         <Animated.View
           style={[
             styles.glow,
             {
               opacity: glowOpacity,
-
               transform: [
                 {
                   scale: glowScale,
@@ -153,16 +129,12 @@ export default function SplashScreen() {
           ]}
         />
 
-        {/* =====================================
-            MAIN NOORKIDS LOGO
-        ====================================== */}
-
+        {/* NoorKids Full Logo */}
         <Animated.View
           style={[
             styles.logoWrapper,
             {
               opacity: logoOpacity,
-
               transform: [
                 {
                   scale: logoScale,
@@ -172,17 +144,14 @@ export default function SplashScreen() {
           ]}
         >
           <Image
-            source={require('../../assets/branding/noorkids-logo.png')}
+            source={require('../../../assets/branding/noorkids-logo.png')}
             style={styles.logo}
             resizeMode="contain"
             accessibilityLabel="NoorKids logo"
           />
         </Animated.View>
 
-        {/* =====================================
-            TAGLINE
-        ====================================== */}
-
+        {/* Tagline */}
         <Animated.View
           style={[
             styles.subtitleWrapper,
@@ -196,15 +165,12 @@ export default function SplashScreen() {
           </Text>
         </Animated.View>
 
-        {/* =====================================
-            4 SECOND PROGRESS INDICATOR
-        ====================================== */}
-
-        <View style={styles.loadingArea}>
-          <View style={styles.loadingTrack}>
+        {/* Progress */}
+        <View style={styles.progressArea}>
+          <View style={styles.progressTrack}>
             <Animated.View
               style={[
-                styles.loadingProgress,
+                styles.progressBar,
                 {
                   width: progress.interpolate({
                     inputRange: [0, 1],
@@ -215,22 +181,15 @@ export default function SplashScreen() {
             />
           </View>
         </View>
-
       </View>
     </SafeAreaView>
   );
 }
 
-/* =================================================
-   STYLES
-================================================= */
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
-    backgroundColor:
-      colors.background,
+    backgroundColor: colors.background,
   },
 
   content: {
@@ -239,13 +198,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
 
-    paddingHorizontal:
-      spacing.base,
+    paddingHorizontal: spacing.base,
   },
-
-  /* ==========================================
-     SOFT BACKGROUND GLOW
-  ========================================== */
 
   glow: {
     position: 'absolute',
@@ -255,47 +209,32 @@ const styles = StyleSheet.create({
 
     borderRadius: 155,
 
-    backgroundColor:
-      colors.primary[100],
+    backgroundColor: colors.primary[100],
   },
 
-  /* ==========================================
-     LOGO CONTAINER
-  ========================================== */
-
   logoWrapper: {
-    width: 320,
-    height: 320,
+    width: 300,
+    height: 300,
 
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  /* ==========================================
-     MAIN LOGO
-  ========================================== */
-
   logo: {
-    width: 300,
-    height: 300,
+    width: 285,
+    height: 285,
   },
 
-  /* ==========================================
-     TAGLINE
-  ========================================== */
-
   subtitleWrapper: {
-    marginTop: -24,
+    marginTop: -18,
 
     alignItems: 'center',
   },
 
   subtitle: {
-    color:
-      colors.text.secondary,
+    color: colors.text.secondary,
 
     fontSize: 17,
-
     lineHeight: 26,
 
     fontWeight: '600',
@@ -305,11 +244,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
 
-  /* ==========================================
-     LOADING AREA
-  ========================================== */
-
-  loadingArea: {
+  progressArea: {
     position: 'absolute',
 
     bottom: 64,
@@ -317,32 +252,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  /* ==========================================
-     LOADING TRACK
-  ========================================== */
-
-  loadingTrack: {
-    width: 96,
+  progressTrack: {
+    width: 92,
     height: 6,
 
     overflow: 'hidden',
 
     borderRadius: 999,
 
-    backgroundColor:
-      colors.primary[100],
+    backgroundColor: colors.primary[100],
   },
 
-  /* ==========================================
-     LOADING PROGRESS
-  ========================================== */
-
-  loadingProgress: {
+  progressBar: {
     height: 6,
 
     borderRadius: 999,
 
-    backgroundColor:
-      colors.primary[500],
+    backgroundColor: colors.primary[500],
   },
 });
