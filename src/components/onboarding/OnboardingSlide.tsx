@@ -1,4 +1,9 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
@@ -18,7 +23,10 @@ export default function OnboardingSlide({
 }: OnboardingSlideProps) {
   return (
     <View style={styles.container}>
-      {/* Full NoorKids Logo - Welcome Screen */}
+      {/* =====================================
+          WELCOME LOGO
+      ====================================== */}
+
       {showLogo && (
         <View style={styles.logoWrapper}>
           <Image
@@ -30,7 +38,10 @@ export default function OnboardingSlide({
         </View>
       )}
 
-      {/* Illustration */}
+      {/* =====================================
+          MAIN ILLUSTRATION
+      ====================================== */}
+
       <View
         style={[
           styles.imageArea,
@@ -45,9 +56,14 @@ export default function OnboardingSlide({
         />
       </View>
 
-      {/* Text Content */}
+      {/* =====================================
+          TEXT
+      ====================================== */}
+
       <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>
+          {title}
+        </Text>
 
         <Text style={styles.description}>
           {description}
@@ -60,12 +76,19 @@ export default function OnboardingSlide({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
     paddingHorizontal: spacing.base,
+
+    backgroundColor: colors.background,
   },
+
+  // ==========================================
+  // WELCOME LOGO
+  // ==========================================
 
   logoWrapper: {
     width: '100%',
-    height: 88,
+    height: 112,
 
     alignItems: 'center',
     justifyContent: 'center',
@@ -74,18 +97,25 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 190,
-    height: 80,
+    width: 250,
+    height: 105,
   },
+
+  // ==========================================
+  // IMAGE
+  // ==========================================
 
   imageArea: {
     flex: 1,
+
     width: '100%',
 
     alignItems: 'center',
     justifyContent: 'center',
 
     minHeight: 300,
+
+    backgroundColor: colors.background,
   },
 
   imageAreaWithLogo: {
@@ -96,6 +126,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+
+  // ==========================================
+  // CONTENT
+  // ==========================================
 
   content: {
     width: '100%',

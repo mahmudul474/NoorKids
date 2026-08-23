@@ -1,15 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
-    ViewToken,
+  Dimensions,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  ViewToken,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -23,36 +23,27 @@ import OnboardingSlide from './OnboardingSlide';
 
 const { width } = Dimensions.get('window');
 
+const AUTO_SLIDE_DURATION = 6000;
+
 const slides = [
   {
     id: 'welcome',
-
     image: require('../../../assets/onboarding/onboarding-welcome.png'),
-
     title: 'আসসালামু আলাইকুম!',
-
     description:
       'NoorKids-এর সাথে আরবি শেখা হোক আরও সহজ, আনন্দদায়ক ও মজার।',
   },
-
   {
     id: 'learning',
-
     image: require('../../../assets/onboarding/onboarding-learning.png'),
-
     title: 'পড়ি, লিখি ও বলি',
-
     description:
       'হরফ চিনে, শব্দ শিখে এবং সঠিক উচ্চারণের মাধ্যমে আরবি শেখা আরও সহজ করি।',
   },
-
   {
     id: 'rewards',
-
     image: require('../../../assets/onboarding/onboarding-rewards.png'),
-
     title: 'প্রতিদিন এগিয়ে যান',
-
     description:
       'প্রতিটি শেখায় অর্জন করুন স্টার, সম্পূর্ণ করুন লক্ষ্য এবং নিজের অগ্রগতি দেখুন।',
   },
@@ -63,39 +54,123 @@ export default function OnboardingCarousel() {
 
   const flatListRef = useRef<FlatList>(null);
 
+  const timerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const isFirstSlide = currentIndex === 0;
-  const isLastSlide = currentIndex === slides.length - 1;
+  const isLastSlide =
+    currentIndex === slides.length - 1;
 
-  const goToProfile = () => {
-    router.replace('/profile');
-  };
+  // ==========================================
+  // CLEAR AUTO SLIDE TIMER
+  // ==========================================
 
-  const handleNext = () => {
-    if (isLastSlide) {
-      goToProfile();
+  const clearAutoSlideTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  // ==========================================
+  // GO TO SLIDE
+  // ==========================================
+
+  const goToSlide = useCallback((index: number) => {
+    if (index < 0 || index >= slides.length) {
       return;
     }
 
     flatListRef.current?.scrollToIndex({
-      index: currentIndex + 1,
+      index,
       animated: true,
     });
-  };
+  }, []);
 
-  const handlePrevious = () => {
+  // ==========================================
+  // AUTO SLIDE
+  // ==========================================
+
+  const startAutoSlideTimer = useCallback(() => {
+    clearAutoSlideTimer();
+
+    // Rewards screen stays until user clicks
+    if (isLastSlide) {
+      return;
+    }
+
+    timerRef.current = setTimeout(() => {
+      goToSlide(currentIndex + 1);
+    }, AUTO_SLIDE_DURATION);
+  }, [
+    clearAutoSlideTimer,
+    currentIndex,
+    goToSlide,
+    isLastSlide,
+  ]);
+
+  useEffect(() => {
+    startAutoSlideTimer();
+
+    return () => {
+      clearAutoSlideTimer();
+    };
+  }, [
+    currentIndex,
+    startAutoSlideTimer,
+    clearAutoSlideTimer,
+  ]);
+
+  // ==========================================
+  // NEXT
+  // ==========================================
+
+  const handleNext = useCallback(() => {
+    clearAutoSlideTimer();
+
+    if (isLastSlide) {
+     router.replace('/(tabs)');
+      return;
+    }
+
+    goToSlide(currentIndex + 1);
+  }, [
+    clearAutoSlideTimer,
+    currentIndex,
+    goToSlide,
+    isLastSlide,
+  ]);
+
+  // ==========================================
+  // PREVIOUS
+  // ==========================================
+
+  const handlePrevious = useCallback(() => {
+    clearAutoSlideTimer();
+
     if (isFirstSlide) {
       return;
     }
 
-    flatListRef.current?.scrollToIndex({
-      index: currentIndex - 1,
-      animated: true,
-    });
-  };
+    goToSlide(currentIndex - 1);
+  }, [
+    clearAutoSlideTimer,
+    currentIndex,
+    goToSlide,
+    isFirstSlide,
+  ]);
 
-  const handleSkip = () => {
-    goToProfile();
-  };
+  // ==========================================
+  // SKIP
+  // ==========================================
+
+  const handleSkip = useCallback(() => {
+    clearAutoSlideTimer();
+router.replace('/(tabs)');  }, [clearAutoSlideTimer]);
+
+  // ==========================================
+  // SWIPE
+  // ==========================================
 
   const handleViewableItemsChanged = useRef(
     ({
@@ -119,12 +194,13 @@ export default function OnboardingCarousel() {
       style={styles.container}
       edges={['top', 'bottom']}
     >
-      {/* =========================
+      {/* =====================================
           TOP BAR
-      ========================== */}
+      ====================================== */}
 
       <View style={styles.topBar}>
         {/* Back */}
+
         <Pressable
           onPress={handlePrevious}
           disabled={isFirstSlide}
@@ -143,10 +219,16 @@ export default function OnboardingCarousel() {
           />
         </Pressable>
 
-        {/* Small Logo
-            Only Learning + Rewards */}
+        {/* ==================================
+            LARGE CENTER LOGO
+            Learning + Rewards
+        =================================== */}
+
         {currentIndex !== 0 && (
-          <View style={styles.smallBrand}>
+          <View
+            style={styles.smallBrand}
+            pointerEvents="none"
+          >
             <Image
               source={require('../../../assets/branding/noorkids-logo.png')}
               style={styles.smallLogo}
@@ -157,6 +239,7 @@ export default function OnboardingCarousel() {
         )}
 
         {/* Skip */}
+
         <Pressable
           onPress={handleSkip}
           accessibilityRole="button"
@@ -164,13 +247,15 @@ export default function OnboardingCarousel() {
           hitSlop={10}
           style={styles.skipButton}
         >
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={styles.skipText}>
+            Skip
+          </Text>
         </Pressable>
       </View>
 
-      {/* =========================
+      {/* =====================================
           SLIDES
-      ========================== */}
+      ====================================== */}
 
       <FlatList
         ref={flatListRef}
@@ -191,7 +276,9 @@ export default function OnboardingCarousel() {
             />
           </View>
         )}
-        onViewableItemsChanged={handleViewableItemsChanged}
+        onViewableItemsChanged={
+          handleViewableItemsChanged
+        }
         viewabilityConfig={{
           itemVisiblePercentThreshold: 60,
         }}
@@ -202,9 +289,9 @@ export default function OnboardingCarousel() {
         })}
       />
 
-      {/* =========================
-          BOTTOM
-      ========================== */}
+      {/* =====================================
+          BOTTOM CONTROLS
+      ====================================== */}
 
       <View style={styles.bottomArea}>
         <OnboardingDots
@@ -213,7 +300,11 @@ export default function OnboardingCarousel() {
         />
 
         <OnboardingButton
-          label={isLastSlide ? 'শুরু করি' : 'পরবর্তী'}
+          label={
+            isLastSlide
+              ? 'শুরু করি'
+              : 'পরবর্তী'
+          }
           onPress={handleNext}
           icon="arrow-forward"
         />
@@ -222,13 +313,18 @@ export default function OnboardingCarousel() {
   );
 }
 
+// ============================================
+// STYLES
+// ============================================
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     backgroundColor: colors.background,
   },
 
+  // Header remains compact so artwork
+  // does not get pushed down.
   topBar: {
     height: 58,
 
@@ -237,6 +333,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+
+    backgroundColor: colors.background,
   },
 
   iconButton: {
@@ -252,11 +350,17 @@ const styles = StyleSheet.create({
 
     borderWidth: 1,
     borderColor: colors.primary[100],
+
+    zIndex: 10,
   },
 
   hiddenButton: {
     opacity: 0,
   },
+
+  // ==========================================
+  // LOGO POSITION
+  // ==========================================
 
   smallBrand: {
     position: 'absolute',
@@ -264,20 +368,26 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
 
+    // Move logo DOWN from the top
+    top: 38,
+
     alignItems: 'center',
     justifyContent: 'center',
 
-    pointerEvents: 'none',
+    zIndex: 5,
   },
 
+  // Much larger than before
   smallLogo: {
-    width: 88,
-    height: 40,
+    width: 205,
+    height: 86,
   },
 
   skipButton: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
+
+    zIndex: 10,
   },
 
   skipText: {
@@ -291,6 +401,8 @@ const styles = StyleSheet.create({
     width,
 
     flex: 1,
+
+    backgroundColor: colors.background,
   },
 
   bottomArea: {
@@ -298,5 +410,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
 
     gap: spacing.lg,
+
+    backgroundColor: colors.background,
   },
 });
