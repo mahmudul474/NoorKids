@@ -17,22 +17,17 @@ import { spacing } from '@/theme/spacing';
 
 export default function LearnScreen() {
   // ==========================================
-  // TEMPORARY MOCK DATA
-  // Firebase will replace these later.
+  // TEMPORARY DATA
   // ==========================================
 
   const stars = 125;
-
   const completedLetters = 6;
-
   const totalLetters = 29;
-
   const streak = 3;
-
   const lessonsCompleted = 12;
 
   // ==========================================
-  // HEADER
+  // BACK
   // ==========================================
 
   const handleBackPress = () => {
@@ -40,16 +35,24 @@ export default function LearnScreen() {
   };
 
   // ==========================================
-  // CONTINUE ARABIC
+  // OPEN LESSON
+  // ==========================================
+
+  const openLesson = (lessonNumber: number) => {
+    router.push({
+      pathname: '/lesson/[id]',
+      params: {
+        id: String(lessonNumber),
+      },
+    });
+  };
+
+  // ==========================================
+  // ARABIC PROGRESS
   // ==========================================
 
   const handleContinueArabic = () => {
-    console.log(
-      'Continue Arabic learning',
-    );
-
-    // Later:
-    // router.push('/lesson/arabic');
+    openLesson(7);
   };
 
   // ==========================================
@@ -59,26 +62,20 @@ export default function LearnScreen() {
   const handleCategoryPress = (
     categoryId: string,
   ) => {
-    console.log(
-      'Learning category:',
-      categoryId,
-    );
+    if (categoryId === 'letters') {
+      openLesson(7);
+      return;
+    }
 
-    // Later these will navigate to
-    // their dedicated learning screens.
+    // Other categories will be connected later.
   };
 
   // ==========================================
-  // TODAY'S LESSON
+  // TODAY LESSON
   // ==========================================
 
   const handleStartLesson = () => {
-    console.log(
-      'Start lesson',
-    );
-
-    // Later:
-    // router.push('/lesson/7');
+    openLesson(7);
   };
 
   return (
@@ -106,7 +103,7 @@ export default function LearnScreen() {
         />
 
         {/* =====================================
-            MAIN CONTENT
+            CONTENT
         ====================================== */}
 
         <View style={styles.content}>
@@ -125,7 +122,7 @@ export default function LearnScreen() {
           />
 
           {/* =================================
-              LEARNING CATEGORIES
+              CATEGORIES
           ================================= */}
 
           <LearningCategories
@@ -149,7 +146,7 @@ export default function LearnScreen() {
           />
 
           {/* =================================
-              PROGRESS SUMMARY
+              PROGRESS
           ================================= */}
 
           <LearnProgressSummary
@@ -181,8 +178,7 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    paddingBottom:
-      spacing.xl,
+    paddingBottom: spacing.xl,
   },
 
   content: {
