@@ -27,10 +27,11 @@ type Answer = {
 export default function QuizScreen() {
   const params = useLocalSearchParams<{
     id?: string;
+    score?: string;
   }>();
 
   // ==========================================
-  // QUESTION
+  // CURRENT QUESTION
   // ==========================================
 
   const questionId = Number(params.id) || 1;
@@ -43,42 +44,370 @@ export default function QuizScreen() {
   const totalQuestions = 10;
 
   // ==========================================
-  // TEMPORARY QUESTION DATA
+  // PREVIOUS SCORE
   // ==========================================
 
-  const question = 'এই হরফটির নাম কী?';
+  const previousScore =
+    Number(params.score) || 0;
 
-  const arabicLetter = 'ب';
+  // ==========================================
+  // QUESTION DATA
+  // TEMPORARY
+  // Firebase will replace this later.
+  // ==========================================
 
-  const instruction =
-    'সঠিক উত্তরটি নির্বাচন করো';
+  const questions: Record<
+    number,
+    {
+      question: string;
+      letter: string;
+      instruction: string;
+      answers: Answer[];
+    }
+  > = {
+    1: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ب',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'আলিফ',
+          correct: false,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'বা',
+          correct: true,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'তা',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'জীম',
+          correct: false,
+        },
+      ],
+    },
 
-  const answers: Answer[] = [
-    {
-      id: 'a',
-      label: 'A',
-      answer: 'আলিফ',
-      correct: false,
+    2: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ت',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'তা',
+          correct: true,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'বা',
+          correct: false,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'জীম',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'দাল',
+          correct: false,
+        },
+      ],
     },
-    {
-      id: 'b',
-      label: 'B',
-      answer: 'বা',
-      correct: true,
+
+    3: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ث',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'বা',
+          correct: false,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'সা',
+          correct: true,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'তা',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'হা',
+          correct: false,
+        },
+      ],
     },
-    {
-      id: 'c',
-      label: 'C',
-      answer: 'তা',
-      correct: false,
+
+    4: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ج',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'জীম',
+          correct: true,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'বা',
+          correct: false,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'খা',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'দাল',
+          correct: false,
+        },
+      ],
     },
-    {
-      id: 'd',
-      label: 'D',
-      answer: 'জীম',
-      correct: false,
+
+    5: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ح',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'হা',
+          correct: true,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'জীম',
+          correct: false,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'খা',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'দাল',
+          correct: false,
+        },
+      ],
     },
-  ];
+
+    6: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'خ',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'হা',
+          correct: false,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'খা',
+          correct: true,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'জীম',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'বা',
+          correct: false,
+        },
+      ],
+    },
+
+    7: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'د',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'দাল',
+          correct: true,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'যা',
+          correct: false,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'র',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'বা',
+          correct: false,
+        },
+      ],
+    },
+
+    8: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ذ',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'দাল',
+          correct: false,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'যাল',
+          correct: true,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'রা',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'জীম',
+          correct: false,
+        },
+      ],
+    },
+
+    9: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ر',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'যাল',
+          correct: false,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'রা',
+          correct: true,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'দাল',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'যা',
+          correct: false,
+        },
+      ],
+    },
+
+    10: {
+      question:
+        'এই হরফটির নাম কী?',
+      letter: 'ز',
+      instruction:
+        'সঠিক উত্তরটি নির্বাচন করো',
+      answers: [
+        {
+          id: 'a',
+          label: 'A',
+          answer: 'রা',
+          correct: false,
+        },
+        {
+          id: 'b',
+          label: 'B',
+          answer: 'যা',
+          correct: true,
+        },
+        {
+          id: 'c',
+          label: 'C',
+          answer: 'সীন',
+          correct: false,
+        },
+        {
+          id: 'd',
+          label: 'D',
+          answer: 'শীন',
+          correct: false,
+        },
+      ],
+    },
+  };
+
+  const currentData =
+    questions[currentQuestion];
 
   // ==========================================
   // STATE
@@ -105,20 +434,17 @@ export default function QuizScreen() {
   const handlePlayAudio = () => {
     Alert.alert(
       'উচ্চারণ',
-      `এখানে "${arabicLetter}" হরফের অডিও চলবে।`,
+      `এখানে "${currentData.letter}" হরফের অডিও চলবে।`,
     );
   };
 
   // ==========================================
-  // ANSWER SELECT
+  // SELECT ANSWER
   // ==========================================
 
   const handleAnswerPress = (
     answerId: string,
   ) => {
-    // একবার answer submit হলে
-    // আবার অন্য answer select করতে পারবে না।
-
     if (answerSubmitted) {
       return;
     }
@@ -134,18 +460,14 @@ export default function QuizScreen() {
   const getAnswerState = (
     answer: Answer,
   ) => {
-    // কিছু select করা হয়নি
     if (!selectedAnswerId) {
       return 'default' as const;
     }
 
-    // Correct answer সবসময় green দেখাবে
     if (answer.correct) {
       return 'correct' as const;
     }
 
-    // User যেটা select করেছে
-    // সেটা ভুল হলে red হবে
     if (
       answer.id === selectedAnswerId &&
       !answer.correct
@@ -157,7 +479,7 @@ export default function QuizScreen() {
   };
 
   // ==========================================
-  // NEXT QUESTION
+  // NEXT
   // ==========================================
 
   const handleNext = () => {
@@ -165,34 +487,52 @@ export default function QuizScreen() {
       return;
     }
 
-    // Last question
+    const selectedAnswer =
+      currentData.answers.find(
+        (answer) =>
+          answer.id ===
+          selectedAnswerId,
+      );
+
+    const isCorrect =
+      selectedAnswer?.correct === true;
+
+    const newScore =
+      previousScore +
+      (isCorrect ? 1 : 0);
+
+    // ========================================
+    // FINISH QUIZ
+    // ========================================
+
     if (
       currentQuestion >=
       totalQuestions
     ) {
-      Alert.alert(
-        'কুইজ সম্পন্ন! 🎉',
-        'অসাধারণ! তুমি এই কুইজটি শেষ করেছো।',
-        [
-          {
-            text: 'ঠিক আছে',
-            onPress: () => {
-              router.back();
-            },
-          },
-        ],
-      );
+      router.replace({
+        pathname: '/quiz/result',
+        params: {
+          score: String(newScore),
+          total: String(
+            totalQuestions,
+          ),
+        },
+      });
 
       return;
     }
 
-    // Next question
+    // ========================================
+    // NEXT QUESTION
+    // ========================================
+
     router.replace({
       pathname: '/quiz/[id]',
       params: {
         id: String(
           currentQuestion + 1,
         ),
+        score: String(newScore),
       },
     });
   };
@@ -242,9 +582,15 @@ export default function QuizScreen() {
           ================================= */}
 
           <QuestionCard
-            question={question}
-            arabicLetter={arabicLetter}
-            instruction={instruction}
+            question={
+              currentData.question
+            }
+            arabicLetter={
+              currentData.letter
+            }
+            instruction={
+              currentData.instruction
+            }
             onPlayAudio={
               handlePlayAudio
             }
@@ -255,21 +601,23 @@ export default function QuizScreen() {
           ================================= */}
 
           <View style={styles.answers}>
-            {answers.map((answer) => (
-              <AnswerOption
-                key={answer.id}
-                label={answer.label}
-                answer={answer.answer}
-                state={getAnswerState(
-                  answer,
-                )}
-                onPress={() =>
-                  handleAnswerPress(
-                    answer.id,
-                  )
-                }
-              />
-            ))}
+            {currentData.answers.map(
+              (answer) => (
+                <AnswerOption
+                  key={answer.id}
+                  label={answer.label}
+                  answer={answer.answer}
+                  state={getAnswerState(
+                    answer,
+                  )}
+                  onPress={() =>
+                    handleAnswerPress(
+                      answer.id,
+                    )
+                  }
+                />
+              ),
+            )}
           </View>
 
           {/* =================================
@@ -295,14 +643,12 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-
     backgroundColor:
       colors.background,
   },
 
   scrollView: {
     flex: 1,
-
     backgroundColor:
       colors.background,
   },
@@ -313,14 +659,12 @@ const styles = StyleSheet.create({
 
   content: {
     width: '100%',
-
     paddingHorizontal:
       spacing.base,
   },
 
   answers: {
     width: '100%',
-
     marginTop: spacing.md,
   },
 });
